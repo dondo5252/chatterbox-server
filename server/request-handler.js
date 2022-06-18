@@ -20,10 +20,12 @@ var defaultCorsHeaders = {
 
 //hardcoded data to send back
 var localArray = [{
+  message_id: 0,
   username: 'Jono',
-  text: 'Do my bidding!'
+  text: 'Do my bidding!',
+  roomname: 'lobby'
 }];
-
+var message_id = 0;
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -46,23 +48,29 @@ var requestHandler = function(request, response) {
   var headers = defaultCorsHeaders;
 
   headers['Content-Type'] = 'application/json';
-
-
-  if (request.method === 'GET' && request.url.includes('/classes/messages')) {
+  if (request.method === 'OPTIONS' && request.url.includes('/classes/messages')) {
+    response.writeHead(200, headers);
+    response.end(JSON.stringify(localArray));
+  } else if (request.method === 'GET' && request.url.includes('/classes/messages')) {
     response.writeHead(200, headers);
     response.end(JSON.stringify(localArray));
   } else if (request.method === 'POST' && request.url.includes('/classes/messages')) {
     let body = [];
     request.on('data', (chunk) => {
       body.push(chunk);
-
     }).on('end', () => {
-
-      body = Buffer.concat(body).toString();
+      //body = Buffer.concat(body).toString();
+      console.log('this shoud be obj of string after buffer', body.toString());
+      body = body.toString();
+      body = JSON.parse(body);
+      console.log('after json.parse this shoud be an obj', body);
+      message_id++;
+      body.message_id = message_id;
+      console.log('after adding the id property', body);
       response.writeHead(201, headers);
       localArray.push(body);
       //response.statusCode = 201;
-      console.log('-------------------------', response);
+      console.log('-------------------------', localArray);
       response.end(JSON.stringify(localArray));
     });
   } else if (request.method === 'GET' && !request.url.includes(request.endpoint)) {

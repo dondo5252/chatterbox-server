@@ -12,6 +12,8 @@ var Messages = {
     callback(Messages.items());
   },
 
+    // in app.js   inside function fetch calling  messages.update(data, cb)
+    //messages = dataset [{message_id:, text: , username:, roomname: , creatAt:} {} ]
   update: function(messages, callback = ()=>{}) {
     var length = Object.keys(Messages._data).length;
 
@@ -32,5 +34,5 @@ var Messages = {
     message.roomname = message.roomname || '';
     return message;
   }
-  
+
 };
